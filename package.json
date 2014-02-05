@@ -7,11 +7,12 @@
     "test": "test"
   },
   "dependencies": {
-    "koa": "~0.3.0",
+    "koa": "~0.3.0"
   },
   "devDependencies": {
     "mocha": "~1.17.1",
     "should": "~3.1.2",
+    "supertest": "~0.9.0",
     "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony"
   },
   "scripts": {
