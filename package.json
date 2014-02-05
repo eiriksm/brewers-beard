@@ -1,0 +1,30 @@
+{
+  "name": "brewers-beard",
+  "version": "0.0.0",
+  "description": "This will be the home of the brew logger.",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "koa": "~0.3.0",
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "should": "~3.1.2",
+    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eiriksm/brewers-beard.git"
+  },
+  "author": "Eirik S. Morland",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eiriksm/brewers-beard/issues"
+  },
+  "homepage": "https://github.com/eiriksm/brewers-beard"
+}
