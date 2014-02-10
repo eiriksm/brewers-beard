@@ -1,24 +1,59 @@
 var db = require('../../lib/db');
+var Brew = require('../../lib/models/brew');
 
-var getBrew = function(id) {
+var getBrew = function(id, callback) {
   // If no id, return whole list.
   if (!id) {
-    return 'LIST VIEW';
+    db.get(null, callback);
+    return;
   }
-  return 'brew';
+
+  db.get(id, function(err, val) {
+    callback(err, val);
+  });
+};
+
+var postBrew = function(data, callback) {
+  var brew = new Brew('brew');
+  // Generate id. But here?
+  data.id = Date.now();
+  db.put(data, callback);
+};
+
+var deleteBrew = function(id, callback) {
+  db.del(id, function(err) {
+    callback(err);
+  });
+};
+
+var updateBrew = function(id, data, callback) {
+  data.id = id;
+  db.put(data, callback);
 }
 
-var answer = function(verb, id) {
+var answer = function(verb, id, ctx) {
   return function(callback) {
     /* istanbul ignore else */
     if (verb === 'GET') {
-      var value = getBrew(id);
-      callback(null, value);
-      return;
+      getBrew(id, function(err, res) {
+        callback(err, res);
+        return;
+      });
     }
-    // Feeling pretty safe this is the right thing to do.
-    else {
-      callback(new Error('Problems'));
+    if (verb === 'POST') {
+      postBrew(ctx.postbody, function(err, res) {
+        callback(err, res);
+        return;
+      });
+    }
+    if (verb === 'DELETE') {
+      deleteBrew(id, function(err) {
+        callback(err);
+        return;
+      });
+    }
+    if (verb === 'PATCH') {
+      updateBrew(id, ctx.postbody, callback);
     }
   };
 };

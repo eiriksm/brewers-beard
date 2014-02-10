@@ -6,6 +6,7 @@ var serve = require('koa-static');
 var app = koa();
 var bunyan = require('bunyan');
 var util = require('util');
+var parse = require('co-body');
 
 var log = bunyan.createLogger({
   name: "Brewers beard",
@@ -18,7 +19,9 @@ app.log = log;
 // logger
 app.use(function *(next) {
   var start = new Date;
-  console.log(next)
+  if (this.req.method === 'POST' || this.req.method === 'PATCH') {
+    this.postbody = yield parse(this, { limit: '10kb' });
+  }
   yield next;
   var ms = new Date - start;
   app.log.info({req: this.req}, 'Responded in %d msecs on request', ms);

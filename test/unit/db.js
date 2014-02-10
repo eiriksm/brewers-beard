@@ -10,12 +10,12 @@ var testdata = {
 describe('Database', function() {
   it('Should not return something on GET when we have an empty db', function(done) {
     db.get('a', function(err, data) {
-      if (err) {
-        done(err);
-        return;
+      if (err && parseInt(err.message, 10) === 404) {
+        done();
       }
-      assert.equal(data, undefined);
-      done();
+      else {
+        done('Did not find 404 error');
+      }
     });
   });
 
@@ -36,6 +36,26 @@ describe('Database', function() {
         return;
       }
       data.data.should.equal(testdata);
+      done();
+    });
+  });
+
+  it('Should be possible to delete the test data', function(done) {
+    db.del('a', function(err) {
+      done(err);
+    });
+  });
+
+  it('Should not be possible to delete without id', function(done) {
+    db.del(null, function(err) {
+      err.message.should.equal('400');
+      done();
+    });
+  });
+
+  it('Should not be possible to delete invalid id', function(done) {
+    db.del('a', function(err) {
+      err.message.should.equal('404');
       done();
     });
   });

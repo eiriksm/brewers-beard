@@ -1,5 +1,6 @@
 var app = require('../src/app');
 var brew = require('../src/routes/resources/brew');
+var Brew = require('../src/lib/models/brew');
 var request = require('supertest');
 var assert = require('assert');
 var should = require('should');
@@ -52,6 +53,20 @@ describe('Routes', function() {
         done();
       });
     });
+
+    it('Should return 404 when resource id does not exist', function(done) {
+      request(app.server)
+      .get('/api/brew/doesnotexist')
+      .end(function(err, res) {
+        if (err) {
+          done(err);
+          return;
+        }
+        res.status.should.equal(404);
+        done();
+      });
+    });
+
   });
 
   describe('Brew', function() {
@@ -59,14 +74,71 @@ describe('Routes', function() {
       request(app.server)
       .get('/api/brew')
       .expect(200)
-      .expect('LIST VIEW', done);
+      .expect('[]', done);
     });
 
     it('Should return a brew when specifying id on GET', function(done) {
       request(app.server)
       .get('/api/brew/1')
       .expect(200)
-      .expect('brew', done);
+      .expect(JSON.parse(JSON.stringify(new Brew())), done);
+    });
+
+    var newid;
+
+    it('Should create a brew when POSTing', function(done) {
+      request(app.server)
+      .post('/api/brew')
+      .send(JSON.stringify({name: 'super brew'}))
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        newid = res.text;
+        console.log(newid);
+        done(err);
+      });
+    });
+
+    it('Should return same brew on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/' + newid)
+      .end(function(err, res) {
+        var data = JSON.parse(res.text);
+        data.name.should.equal('super brew');
+        done();
+      });
+    });
+
+    it('Should update a brew when PATCHing', function(done) {
+      request(app.server)
+      .patch('/api/brew/' + newid)
+      .send({name: 'super brew updated'})
+      .expect(200, done);
+    });
+
+    it('Should show updated brew on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/' + newid)
+      .end(function(err, res) {
+        var data = JSON.parse(res.text);
+        data.name.should.equal('super brew updated');
+        done();
+      });
+    });
+
+    it('Should delete a brew when DELETEing', function(done) {
+      request(app.server)
+      .del('/api/brew/' + newid)
+      .expect(204)
+      .end(function(err, res) {
+        done(err);
+      });
+    });
+
+    it('Should return 404 on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/' + newid)
+      .expect(404, done);
     });
 
 

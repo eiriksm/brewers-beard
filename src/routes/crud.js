@@ -1,45 +1,34 @@
 var requireDir = require('require-dir');
 var resources = requireDir('./resources');
 
-function run(genfun){
-  // instantiate the generator object
-  var gen = genfun();
-  // This is the async loop pattern
-  function next(err, answer){
-    var res;
-    /* istanbul ignore if */
-    if (err) {
-      // if err, throw it into the wormhole
-      return gen.throw(err);
-    }
-    else {
-      // if good value, send it
-      res = gen.next(answer);
-    }
-    if (!res.done){
-      // if we are not at the end
-      // we have an async request to
-      // fulfill, we do this by calling
-      // `value` as a function
-      // and passing it a callback
-      // that receives err, answer
-      // for which we'll just use `next()`
-      res.value(next);
-    }
-  }
-  // Kick off the async loop
-  next();
-}
-
 var index = function*(resource, id){
   var ctx = this;
-  run(function * () {
-    if (!resources[resource]) {
-      ctx.throw(404);
+  if (!resources[resource]) {
+    ctx.throw(404);
+  }
+  try {
+    var resFun = resources[resource](ctx.req.method, id, ctx);
+    var lock = false;
+    resFun(function(err, val) {
+      if (lock) {
+        return;
+      }
+      lock = true;
+      if (err) throw(err);
+      ctx.body = val;
+    });
+  }
+  catch(err) {
+    // Ignoring else, because I can not see why it should ever be run.
+    /* istanbul ignore else */
+    if (!isNaN(parseInt(err.message, 10))) {
+      // I am going to assume this is a status code.
+      ctx.throw(parseInt(err.message));
     }
-    var val = yield resources[resource](ctx.req.method, id);
-    ctx.body = val;
-  });
+    else {
+      ctx.throw(500);
+    }
+  }
 };
 
 module.exports = index;
