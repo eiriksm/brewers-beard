@@ -15,7 +15,12 @@
     "mocha": "~1.17.1",
     "should": "~3.1.2",
     "supertest": "~0.9.0",
-    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony"
+    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony",
+    "gulp-util": "~2.2.14",
+    "gulp": "~3.5.2",
+    "gulp-uglify": "~0.2.1",
+    "gulp-concat": "~2.1.7",
+    "gulp-jshint": "~1.4.0"
   },
   "repository": {
     "type": "git",
