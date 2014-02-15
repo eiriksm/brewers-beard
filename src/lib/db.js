@@ -1,37 +1,46 @@
 var Brew = require('./models/brew');
+var Temp = require('./models/temp');
 
 // Temp data-store.
 var database = {
-  '1': new Brew()
+  brew: {
+    '1': new Brew('super brew', 1)
+  },
+  temp: {
+    '1': new Temp()
+  }
+
 };
 
 var db = {
-  list: [],
-  get: function(id, callback) {
+  get: function(type, id, callback) {
     if (!id) {
-      callback(null, db.list);
+      callback(null, database[type]);
       return;
     }
-    if (!database[id]) {
+    if (!database[type] || !database[type][id]) {
       callback(new Error(404));
       return;
     }
-    callback(null, database[id]);
+    callback(null, database[type][id]);
   },
-  put: function(data, callback) {
-    database[data.id] = data;
+  put: function(type, data, callback) {
+    if (!database[type]) {
+      database[type] = {};
+    }
+    database[type][data.id] = data;
     callback(null, data.id);
   },
-  del: function(id, callback) {
+  del: function(type, id, callback) {
     if (!id) {
       callback(new Error(400));
       return;
     }
-    if (!database[id]) {
+    if (!database[type] || !database[type][id]) {
       callback(new Error(404));
       return;
     }
-    delete database[id];
+    delete database[type][id];
     callback(null);
   }
 };

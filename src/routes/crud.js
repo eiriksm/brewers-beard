@@ -1,13 +1,14 @@
 var requireDir = require('require-dir');
 var resources = requireDir('./resources');
+var app = require('../app');
 
-var index = function*(resource, id){
+var index = function*(resource, id, subresource, sid) {
   var ctx = this;
   if (!resources[resource]) {
     ctx.throw(404);
   }
   try {
-    var resFun = resources[resource](ctx.req.method, id, ctx);
+    var resFun = resources[resource](ctx.req.method, ctx, id, subresource, sid);
     var lock = false;
     resFun(function(err, val) {
       if (lock) {
@@ -26,6 +27,8 @@ var index = function*(resource, id){
       ctx.throw(parseInt(err.message));
     }
     else {
+      app.log.error(err);
+      app.log.error(err.stack);
       ctx.throw(500);
     }
   }

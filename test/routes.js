@@ -74,14 +74,17 @@ describe('Routes', function() {
       request(app.server)
       .get('/api/brew')
       .expect(200)
-      .expect('[]', done);
+      .end(function(err, res) {
+        JSON.parse(res.text)[1].should.have.property('id');
+        done();
+      });
     });
 
     it('Should return a brew when specifying id on GET', function(done) {
       request(app.server)
       .get('/api/brew/1')
       .expect(200)
-      .expect(JSON.parse(JSON.stringify(new Brew())), done);
+      .expect(JSON.parse(JSON.stringify(new Brew('super brew', 1))), done);
     });
 
     var newid;
@@ -94,7 +97,6 @@ describe('Routes', function() {
       .expect(200)
       .end(function(err, res) {
         newid = res.text;
-        console.log(newid);
         done(err);
       });
     });
@@ -140,8 +142,80 @@ describe('Routes', function() {
       .get('/api/brew/' + newid)
       .expect(404, done);
     });
+  });
 
+  describe('Brew temperature', function() {
+    it('Should return a list when not specifying id on GET', function(done) {
+      request(app.server)
+      .get('/api/brew/1/temp')
+      .expect(200)
+      .end(function(err, res) {
+        JSON.parse(res.text)[1].should.have.property('id');
+        done();
+      });
+    });
 
+    it('Should return a temp when specifying id on GET', function(done) {
+      request(app.server)
+      .get('/api/brew/1/temp/1')
+      .expect(200, done);
+    });
+
+    var newid;
+
+    it('Should create a temp when POSTing', function(done) {
+      request(app.server)
+      .post('/api/brew/1/temp')
+      .send(JSON.stringify({name: 'super brew'}))
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        newid = res.text;
+        done(err);
+      });
+    });
+
+    it('Should return same temp on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/1/temp/' + newid)
+      .end(function(err, res) {
+        var data = JSON.parse(res.text);
+        data.name.should.equal('super brew');
+        done();
+      });
+    });
+
+    it('Should update a temp when PATCHing', function(done) {
+      request(app.server)
+      .patch('/api/brew/1/temp/' + newid)
+      .send({name: 'super brew updated', id: newid})
+      .expect(200, done);
+    });
+
+    it('Should show updated temp on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/1/temp/' + newid)
+      .end(function(err, res) {
+        var data = JSON.parse(res.text);
+        data.name.should.equal('super brew updated');
+        done();
+      });
+    });
+
+    it('Should delete a temp when DELETEing', function(done) {
+      request(app.server)
+      .del('/api/brew/1/temp/' + newid)
+      .expect(204)
+      .end(function(err, res) {
+        done(err);
+      });
+    });
+
+    it('Should return 404 on GET now', function(done) {
+      request(app.server)
+      .get('/api/brew/1/temp/' + newid)
+      .expect(404, done);
+    });
   });
 
 });

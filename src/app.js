@@ -8,6 +8,8 @@ var bunyan = require('bunyan');
 var util = require('util');
 var parse = require('co-body');
 
+var rewrite = require('koa-rewrite');
+
 var log = bunyan.createLogger({
   name: "Brewers beard",
   serializers: {
@@ -27,12 +29,29 @@ app.use(function *(next) {
   app.log.info({req: this.req}, 'Responded in %d msecs on request', ms);
 });
 
-app.use(serve(__dirname + '/static'));
+// See what we should rewrite.
+var resources = requireDir('./routes/resources');
+for (var prop in resources) {
+  // Always rewrite all resources to / so we can look at them through angular.
+  app.use(rewrite('/' + prop + '*', '/'));
+}
+
+app.use(serve(__dirname + '/static/'));
+
+// REST for resources.
+app.use(route.get('/api/:resource', routes.crud));
 app.use(route.get('/api/:resource/:id', routes.crud));
 app.use(route.post('/api/:resource', routes.crud));
 app.use(route.patch('/api/:resource/:id', routes.crud));
 app.use(route.delete('/api/:resource/:id', routes.crud));
-app.use(route.get('/api/:thing', routes.crud));
+
+// REST for subresources.
+app.use(route.get('/api/:resource/:id/:subresource', routes.crud));
+app.use(route.get('/api/:resource/:id/:subresource/:sid', routes.crud));
+app.use(route.post('/api/:resource/:id/:subresource', routes.crud));
+app.use(route.patch('/api/:resource/:id/:subresource/:sid', routes.crud));
+app.use(route.delete('/api/:resource/:id/:subresource/:sid', routes.crud));
+
 app.use(route.get('/poll/:user', routes.poll));
 
 app.server = app.listen(3000);
