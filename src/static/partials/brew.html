@@ -1,0 +1,20 @@
+<input class="topcoat-text-input" type="text" placeholder="Brew name" data-ng-model="createdName" />
+<button class="topcoat-button--cta" data-ng-click="addBrew()">Add brew</button>
+
+
+<div data-ng-show="id">
+  {{brew.name}}
+</div>
+
+
+<div data-ng-show="!id" class="topcoat-list">
+  <ul class="topcoat-list__container">
+    <h3 class="topcoat-list__header">My brews</h3>
+    <li data-ng-repeat="brew in brews" class="topcoat-list__item">
+      <button class="topcoat-button--cta" data-ng-click="deleteBrew(brew.id)">Delete</button>
+      <button class="topcoat-button" data-ng-click="updateBrew(brew)">Update</button>
+      <input class="topcoat-text-input" ng-model="brew.name" value="{{brew.name}}" />
+      <a href="/brew/{{brew.id}}">{{brew.name}}</a>
+    </li>
+  </ul>
+</div>
