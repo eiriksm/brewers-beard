@@ -1,7 +1,0 @@
-{
-  "globals": {
-    "angular": true
-  },
-  "browser": true,
-  "devel": true
-}
