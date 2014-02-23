@@ -36,7 +36,7 @@ for (var prop in resources) {
   app.use(rewrite('/' + prop + '*', '/'));
 }
 
-app.use(serve(__dirname + '/static/'));
+app.use(serve(__dirname + '/../static/'));
 
 // REST for resources.
 app.use(route.get('/api/:resource', routes.crud));
