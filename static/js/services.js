@@ -5,7 +5,6 @@
     return $resource('/api/brew/:brewId', {
       brewId: '@id'
     }, {
-      'query':  {method:'GET', isArray:false },
       'update': { method: 'PATCH' }
     });
   });

@@ -8,16 +8,7 @@ var index = function*(resource, id, subresource, sid) {
     ctx.throw(404);
   }
   try {
-    var resFun = resources[resource](ctx.req.method, ctx, id, subresource, sid);
-    var lock = false;
-    resFun(function(err, val) {
-      if (lock) {
-        return;
-      }
-      lock = true;
-      if (err) throw(err);
-      ctx.body = val;
-    });
+    ctx.body = yield resources[resource](ctx.req.method, ctx, id, subresource, sid);
   }
   catch(err) {
     // Ignoring else, because I can not see why it should ever be run.
@@ -33,5 +24,6 @@ var index = function*(resource, id, subresource, sid) {
     }
   }
 };
+
 
 module.exports = index;

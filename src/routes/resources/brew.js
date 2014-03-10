@@ -21,19 +21,33 @@ var getBrew = function(id, callback) {
 
 var postBrew = function(data, callback) {
   // Generate id. But here?
-  data.id = Date.now();
+  data.id = 'brew:' + Date.now();
   db.put('brew', data, callback);
 };
 
 var deleteBrew = function(id, callback) {
-  db.del('brew', id, function(err) {
-    callback(err);
+  db.get('brew', id, function(err, body) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    db.del(id, body._rev, function(err) {
+      callback(err);
+    });
   });
 };
 
 var updateBrew = function(id, data, callback) {
-  data.id = id;
-  db.put('brew', data, callback);
+  db.get('brew', id, function(err, body) {
+    if (err) {
+      // @todo.
+      callback(err);
+      return;
+    }
+    data._rev = body._rev;
+    data.id = id;
+    db.put('brew', data, callback);
+  });
 };
 
 // Generic subresource CRUD functions.
@@ -47,16 +61,30 @@ var getSubResource = function(resource, id, callback) {
 };
 
 var createSubresource = function(resource, data, callback) {
-  data.id = Date.now();
+  data.id = resource + ':' + Date.now();
   db.put(resource, data, callback);
 };
 
 var updateSubresource = function(resource, data, callback) {
-  db.put(resource, data, callback);
+  db.get(resource, data.id, function(err, body) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    data._rev = body._rev;
+    db.put(resource, data, callback);
+  });
 };
 
 var deleteSubresource = function(resource, id, callback) {
-  db.del(resource, id, callback);
+  // First get latest revision.
+  db.get(resource, id, function(err, body) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    db.del(id, body._rev, callback);
+  });
 };
 
 var answer = function(verb, ctx, id, subresource, sid) {
@@ -68,6 +96,7 @@ var answer = function(verb, ctx, id, subresource, sid) {
         getSubResource(subresource, sid, function(err, res) {
           callback(err, res);
         });
+        return;
       }
       getBrew(id, function(err, res) {
         callback(err, res);

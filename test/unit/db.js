@@ -8,8 +8,10 @@ var testdata = {
 };
 
 describe('Database', function() {
+  var testid = 'test' + Date.now();
+  var testrev;
   it('Should not return something on GET when we have an empty db', function(done) {
-    db.get('bogus', 'a', function(err, data) {
+    db.get('bogus', testid, function(err, data) {
       if (err && parseInt(err.message, 10) === 404) {
         done();
       }
@@ -20,7 +22,7 @@ describe('Database', function() {
   });
 
   it('Should be possible to add something to db', function(done) {
-    db.put('test', {id: 'a', data: testdata}, function(err) {
+    db.put('test', {id: testid, data: testdata}, function(err) {
       if (err) {
         done(err);
         return;
@@ -30,24 +32,33 @@ describe('Database', function() {
   });
 
   it('Should be possible to retrieve test data after it is added.', function(done) {
-    db.get('test', 'a', function(err, data) {
+    db.get('test', testid, function(err, data) {
       if (err) {
         done(err);
         return;
       }
-      data.data.should.equal(testdata);
+      testrev = data._rev;
+      data.data.name.should.equal(testdata.name);
+      data.data.somethingElse.should.equal(testdata.somethingElse);
       done();
     });
   });
 
   it('Should be possible to delete the test data', function(done) {
-    db.del('test', 'a', function(err) {
+    db.del(testid, testrev, function(err) {
       done(err);
     });
   });
 
   it('Should not be possible to delete without id', function(done) {
-    db.del('test', null, function(err) {
+    db.del(null, 'something', function(err) {
+      err.message.should.equal('400');
+      done();
+    });
+  });
+
+  it('Should not be possible to delete without rev', function(done) {
+    db.del('something', null, function(err) {
       err.message.should.equal('400');
       done();
     });

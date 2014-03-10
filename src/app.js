@@ -1,32 +1,44 @@
 var koa = require('koa');
 var route = require('koa-route');
-var requireDir = require('require-dir');
-var routes = requireDir('./routes');
 var serve = require('koa-static');
 var app = koa();
 var bunyan = require('bunyan');
 var util = require('util');
 var parse = require('co-body');
-
 var rewrite = require('koa-rewrite');
-
-var log = bunyan.createLogger({
+app.log = bunyan.createLogger({
   name: "Brewers beard",
   serializers: {
     req: bunyan.stdSerializers.req
   }
 });
-app.log = log;
+// Export app.
+module.exports = app;
+
+// Try to get some config in here.
+var yaml = require('js-yaml');
+var fs = require('fs');
+try {
+  app.config = yaml.safeLoad(fs.readFileSync('./config.yml', 'utf8'));
+}
+catch (err) {
+  // We had a problem with this. Try to use default config.
+  console.error('Had problems reading config file. Using default config for now. This can be a problem, and you should take steps to get rid of this error!');
+  app.config = yaml.safeLoad(fs.readFileSync('./default.config.yml', 'utf8'));
+}
+
+var requireDir = require('require-dir');
+var routes = requireDir('./routes');
 
 // logger
 app.use(function *(next) {
-  var start = new Date;
+  var start = new Date();
   if (this.req.method === 'POST' || this.req.method === 'PATCH') {
     this.postbody = yield parse(this, { limit: '10kb' });
   }
   yield next;
-  var ms = new Date - start;
-  app.log.info({req: this.req}, 'Responded in %d msecs on request', ms);
+  var ms = new Date() - start;
+  app.log.info('Responded in %d msecs on request', ms);
 });
 
 // See what we should rewrite.
@@ -36,7 +48,7 @@ for (var prop in resources) {
   app.use(rewrite('/' + prop + '*', '/'));
 }
 
-app.use(serve(__dirname + '/static/'));
+app.use(serve(__dirname + '/../static/'));
 
 // REST for resources.
 app.use(route.get('/api/:resource', routes.crud));
@@ -54,6 +66,6 @@ app.use(route.delete('/api/:resource/:id/:subresource/:sid', routes.crud));
 
 app.use(route.get('/poll/:user', routes.poll));
 
-app.server = app.listen(3000);
-
-module.exports = app;
+require('./lib/db').init(function() {
+  app.server = app.listen(3000);
+});

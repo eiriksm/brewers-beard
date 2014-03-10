@@ -5,3 +5,9 @@ node_js:
 script:
   - make test
   - make test-cov
+
+services:
+  - couchdb
+
+before_script:
+  - curl -X PUT localhost:5984/brewers_beard

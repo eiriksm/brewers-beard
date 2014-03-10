@@ -1,8 +1,5 @@
 var poll = function*(id) {
-  if (!id) {
-    this.throw(400);
-  }
-  this.body = 'test' + id;
+  this.body = yield something();
 };
 
 module.exports = poll;

@@ -1,4 +1,3 @@
-
 test-cov:
 	@NODE_ENV=test node --harmony ./node_modules/istanbul/lib/cli.js \
 		cover ./node_modules/mocha/bin/_mocha -- -d --recursive -R spec
@@ -12,5 +11,6 @@ test-cov-html:
 
 test:
 	@NODE_ENV=test node --harmony ./node_modules/mocha/bin/_mocha --recursive
+	./node_modules/jshint/bin/jshint src
 
 .PHONY: test test-cov

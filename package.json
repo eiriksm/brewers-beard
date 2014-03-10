@@ -10,7 +10,9 @@
     "koa-static": "~1.4.2",
     "bunyan": "~0.22.1",
     "co-body": "0.0.1",
-    "koa-rewrite": "~1.1.0"
+    "koa-rewrite": "~1.1.0",
+    "js-yaml": "~3.0.1",
+    "nano": "~4.6.1"
   },
   "devDependencies": {
     "mocha": "~1.17.1",
@@ -21,7 +23,8 @@
     "gulp": "~3.5.2",
     "gulp-uglify": "~0.2.1",
     "gulp-concat": "~2.1.7",
-    "gulp-jshint": "~1.4.0"
+    "gulp-jshint": "~1.4.0",
+    "jshint": "~2.4.4"
   },
   "repository": {
     "type": "git",
