@@ -298,4 +298,12 @@ describe('Routes', function() {
     });
   });
 
+  describe('Socket connection', function() {
+    it('Should return something on /poll', function(done) {
+      request(app.server)
+      .get('/poll/myuser')
+      .expect(200, done);
+    });
+  });
+
 });
