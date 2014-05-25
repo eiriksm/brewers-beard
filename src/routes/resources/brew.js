@@ -14,9 +14,7 @@ var getBrew = function(id, callback) {
     return;
   }
 
-  db.get('brew', id, function(err, val) {
-    callback(err, val);
-  });
+  db.get('brew', id, callback);
 };
 
 var postBrew = function(data, callback) {

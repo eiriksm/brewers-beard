@@ -2,13 +2,21 @@ var requireDir = require('require-dir');
 var resources = requireDir('./resources');
 var app = require('../app');
 
-var index = function*(resource, id, subresource, sid) {
+var index = function*() {
   var ctx = this;
+  // Since koa-route started to pass in next as argument, we need to get rid
+  // of it.
+  for (var prop in arguments) {
+    if (typeof(arguments[prop]) === 'object' && ctx.req.method === 'GET') {
+      delete arguments[prop];
+    }
+  }
+  var resource = arguments[0];
   if (!resources[resource]) {
     ctx.throw(404);
   }
   try {
-    ctx.body = yield resources[resource](ctx.req.method, ctx, id, subresource, sid);
+    ctx.body = yield resources[resource](ctx.req.method, ctx, arguments[1], arguments[2], arguments[3]);
   }
   catch(err) {
     // Ignoring else, because I can not see why it should ever be run.
@@ -24,6 +32,5 @@ var index = function*(resource, id, subresource, sid) {
     }
   }
 };
-
 
 module.exports = index;

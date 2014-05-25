@@ -1,7 +1,8 @@
 ## Brewers beard
-[ ![Codeship Status for eiriksm/brewers-beard](https://www.codeship.io/projects/c4c86380-8db5-0131-27e2-0e1bdad2b9fd/status?branch=master)](https://www.codeship.io/projects/16066)
-[![Build Status](https://secure.travis-ci.org/eiriksm/brewers-beard.png)](http://travis-ci.org/eiriksm/brewers-beard)
-[![Coverage Status](https://coveralls.io/repos/eiriksm/brewers-beard/badge.png?branch=master)](https://coveralls.io/r/eiriksm/brewers-beard?branch=master)
+==
+[![Build Status](https://secure.travis-ci.org/eiriksm/brewers-beard.svg)](http://travis-ci.org/eiriksm/brewers-beard)
+[![Coverage Status](http://img.shields.io/coveralls/eiriksm/brewers-beard.svg)](https://coveralls.io/r/eiriksm/brewers-beard?branch=master)
+[![Code Climate](http://img.shields.io/codeclimate/github/eiriksm/brewers-beard.svg)](https://codeclimate.com/github/eiriksm/brewers-beard)
+[![Dependency Status](https://david-dm.org/eiriksm/brewers-beard.svg?theme=shields.io)](https://david-dm.org/eiriksm/brewers-beard)
 
 This will be the home of the brew logger.
-

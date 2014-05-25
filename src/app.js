@@ -2,6 +2,10 @@ var koa = require('koa');
 var route = require('koa-route');
 var serve = require('koa-static');
 var app = koa();
+var http = require('http');
+var Primus = require('primus');
+var Emitter = require('primus-emitter');
+var primusHandler = require('./lib/realtime');
 var bunyan = require('bunyan');
 var util = require('util');
 var parse = require('co-body');
@@ -67,5 +71,11 @@ app.use(route.delete('/api/:resource/:id/:subresource/:sid', routes.crud));
 app.use(route.get('/poll/:user', routes.poll));
 
 require('./lib/db').init(function() {
-  app.server = app.listen(3000);
+  app.server = http.createServer(app.callback());
+  app.primus = new Primus(app.server, { transformer: 'engine.io' });
+  // add emitter to Primus
+  app.primus.use('emitter', Emitter);
+  app.primus.save(__dirname +'/../static/js/primus.js');
+  app.primus.on('connection', primusHandler);
+  app.server.listen(3000);
 });
