@@ -1,11 +1,12 @@
 var gulp = require('gulp');
-var gutil = require('gulp-util');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var jshint = require('gulp-jshint');
+var inject = require('gulp-inject');
+var clean = require('gulp-clean');
 
 var paths = {
-  libs: ['src/static/js/lib/angular/*.js', 'src/static/js/lib/*.js']
+  libs: ['static/js/lib/angular/*.js', 'static/js/lib/*.js'],
+  controllers: ['./static/js/components/**/*.js']
 };
 
 gulp.task('scripts', function() {
@@ -13,6 +14,22 @@ gulp.task('scripts', function() {
   return gulp.src(paths.libs)
     .pipe(uglify())
     .pipe(concat('lib.min.js'))
-    .pipe(gulp.dest('src/static/js/build/lib'));
+    .pipe(gulp.dest('static/js/build/lib'));
 });
 
+gulp.task('inject', function() {
+  return gulp.src('./static/partials/index.html')
+    .pipe(inject(gulp.src(paths.controllers, {read: false}), {
+      ignorePath: 'static'
+    }))
+    .pipe(gulp.dest('./static'));
+});
+
+gulp.task('clean', function() {
+  return gulp.src(['static/js/build', 'static/index.html'], {read: false})
+    .pipe(clean());
+});
+
+gulp.task('default', ['clean'], function() {
+  gulp.start('scripts', 'inject');
+});
