@@ -6,21 +6,37 @@
       'ngAnimate',
       'ngResource',
       'brewersBeard.controllers',
-      'brewersBeard.services'
+      'brewersBeard.services',
+      'primus',
+      'brewClockDirective'
   ]).
-  config(function($routeProvider, $locationProvider) {
+  config(function($routeProvider, $locationProvider, primusProvider) {
     $locationProvider.html5Mode(true);
     $routeProvider.when('/brew', {
-      templateUrl: '/partials/brew.html',
+      templateUrl: '/js/components/brew/brew.html',
       controller: 'brewCtrl'});
     $routeProvider.when('/brew/:id', {
-      templateUrl: '/partials/brew.html',
+      templateUrl: '/js/components/brew/brew.html',
       controller: 'brewCtrl'});
     $routeProvider.when('/', {
-      templateUrl: '/partials/main.html',
+      templateUrl: '/js/components/index/main.html',
       controller: 'mainCtrl'});
     $routeProvider.otherwise({redirectTo: '/'});
+    primusProvider
+      // Define Primus endpoint.
+      .setEndpoint()
+      // Define Primus options.
+      .setOptions({
+        reconnect: {
+          minDelay: 100,
+          maxDelay: 60000,
+          retries: 100
+        }
+      })
+      // Define default multiplex option for resources.
+      .setDefaultMultiplex(false);
   });
   angular.module('brewersBeard.controllers', [], function(){});
   angular.module('brewersBeard.services', [], function(){});
+
 })(angular);
