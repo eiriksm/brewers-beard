@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var inject = require('gulp-inject');
-var clean = require('gulp-clean');
+var del = require('del');
 
 var paths = {
   libs: ['static/js/lib/angular/*.js', 'static/js/lib/*.js'],
@@ -25,9 +25,11 @@ gulp.task('inject', function() {
     .pipe(gulp.dest('./static'));
 });
 
-gulp.task('clean', function() {
-  return gulp.src(['static/js/build', 'static/index.html'], {read: false})
-    .pipe(clean());
+gulp.task('clean', function(cb) {
+  return del([
+    'static/js/build',
+    'static/index.html'
+  ], cb);
 });
 
 gulp.task('default', ['clean'], function() {
