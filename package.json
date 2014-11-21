@@ -1,6 +1,6 @@
 {
   "name": "brewers-beard",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "This will be the home of the brew logger.",
   "main": "index.js",
   "test": "make test",
