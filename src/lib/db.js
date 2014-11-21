@@ -38,7 +38,7 @@ var db = {
         /* istanbul ignore next */
         if (err) {
           if (err.statusCode) {
-            callback(new Error(parseInt(err.status_code, 10)));
+            callback(new Error(parseInt(err.statusCode, 10)));
             return;
           }
         }
@@ -47,8 +47,8 @@ var db = {
     }
     else {
       app.db.get(id, function(err, body) {
-        if (err && err.status_code) {
-          callback(new Error(parseInt(err.status_code, 10)));
+        if (err && err.statusCode) {
+          callback(err);
           return;
         }
         callback(err, body);
@@ -60,7 +60,7 @@ var db = {
       /* istanbul ignore next */
       if (err) {
         if (err.statusCode) {
-          callback(new Error(parseInt(err.status_code, 10)));
+          callback(new Error(parseInt(err.statusCode, 10)));
           return;
         }
       }
@@ -77,8 +77,8 @@ var db = {
       return;
     }
     app.db.destroy(id, rev, function(err, body) {
-      if (err && err.status_code) {
-        callback(new Error(parseInt(err.status_code, 10)));
+      if (err && err.statusCode) {
+        callback(err);
         return;
       }
       callback(err, body);
