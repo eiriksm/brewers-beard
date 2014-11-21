@@ -21,9 +21,9 @@ var index = function*() {
   catch(err) {
     // Ignoring else, because I can not see why it should ever be run.
     /* istanbul ignore else */
-    if (!isNaN(parseInt(err.message, 10))) {
+    if (err.statusCode && !isNaN(parseInt(err.statusCode, 10))) {
       // I am going to assume this is a status code.
-      ctx.throw(parseInt(err.message));
+      ctx.throw(parseInt(err.statusCode));
     }
     else {
       app.log.error(err);

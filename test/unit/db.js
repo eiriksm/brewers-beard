@@ -12,7 +12,7 @@ describe('Database', function() {
   var testrev;
   it('Should not return something on GET when we have an empty db', function(done) {
     db.get('bogus', testid, function(err, data) {
-      if (err && parseInt(err.message, 10) === 404) {
+      if (err && parseInt(err.statusCode, 10) === 404) {
         done();
       }
       else {
@@ -66,7 +66,7 @@ describe('Database', function() {
 
   it('Should not be possible to delete invalid id', function(done) {
     db.del('test', 'a', function(err) {
-      err.message.should.equal('404');
+      err.statusCode.should.equal(404);
       done();
     });
   });
